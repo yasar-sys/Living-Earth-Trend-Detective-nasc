@@ -91,11 +91,11 @@ function RegionOverlay({
 
   return (
     <mesh position={position} quaternion={quaternion} renderOrder={1}>
-      <circleGeometry args={[0.24, 32]} />
+      <circleGeometry args={[0.1, 32]} />
       <meshBasicMaterial
         color={color}
         transparent
-        opacity={0.12 + magnitude * 0.45}
+        opacity={0.15 + magnitude * 0.5}
         depthWrite={false}
         side={THREE.DoubleSide}
       />
