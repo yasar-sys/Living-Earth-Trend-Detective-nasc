@@ -16,26 +16,33 @@ const EARTH_RADIUS = 1;
  * drops on small screens.
  */
 function Earth({ lowDetail }: { lowDetail: boolean }) {
-  const [colorMap, normalMap, specularMap] = useTexture([
-    "/textures/earth_atmos_2048.jpg",
-    "/textures/earth_normal_2048.jpg",
-    "/textures/earth_specular_2048.jpg",
-  ]);
-  colorMap.colorSpace = THREE.SRGBColorSpace;
+  const textures = useTexture({
+    map: "/textures/earth_atmos_2048.jpg",
+    normalMap: "/textures/earth_normal_2048.jpg",
+    roughnessMap: "/textures/earth_specular_2048.jpg",
+  }) as { map: THREE.Texture; normalMap: THREE.Texture; roughnessMap: THREE.Texture };
+
+  textures.map.colorSpace = THREE.SRGBColorSpace;
   const segments = lowDetail ? 48 : 96;
+
+  const material = useMemo(() => {
+    const m = new THREE.MeshStandardMaterial({
+      map: textures.map,
+      roughness: 0.85,
+      metalness: 0.05,
+    });
+    if (!lowDetail) {
+      m.normalMap = textures.normalMap;
+      m.normalScale = new THREE.Vector2(0.6, 0.6);
+      m.roughnessMap = textures.roughnessMap;
+    }
+    return m;
+  }, [textures, lowDetail]);
 
   return (
     <group>
-      <mesh>
+      <mesh material={material}>
         <sphereGeometry args={[EARTH_RADIUS, segments, segments / 2]} />
-        <meshStandardMaterial
-          map={colorMap}
-          normalMap={lowDetail ? null : normalMap}
-          normalScale={new THREE.Vector2(0.6, 0.6)}
-          roughnessMap={lowDetail ? null : specularMap}
-          roughness={0.85}
-          metalness={0.05}
-        />
       </mesh>
       {/* Thin atmospheric rim */}
       <mesh scale={1.025}>
