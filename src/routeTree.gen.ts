@@ -10,11 +10,23 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CasesRouteImport } from './routes/cases'
+import { Route as DetectiveModeRouteImport } from './routes/detective-mode'
 import { Route as InvestigateRouteImport } from './routes/investigate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CasesRoute = CasesRouteImport.update({
+  id: '/cases',
+  path: '/cases',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DetectiveModeRoute = DetectiveModeRouteImport.update({
+  id: '/detective-mode',
+  path: '/detective-mode',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InvestigateRoute = InvestigateRouteImport.update({
@@ -25,27 +37,35 @@ const InvestigateRoute = InvestigateRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cases': typeof CasesRoute
+  '/detective-mode': typeof DetectiveModeRoute
   '/investigate': typeof InvestigateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cases': typeof CasesRoute
+  '/detective-mode': typeof DetectiveModeRoute
   '/investigate': typeof InvestigateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cases': typeof CasesRoute
+  '/detective-mode': typeof DetectiveModeRoute
   '/investigate': typeof InvestigateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/investigate'
+  fullPaths: '/' | '/cases' | '/detective-mode' | '/investigate'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/investigate'
-  id: '__root__' | '/' | '/investigate'
+  to: '/' | '/cases' | '/detective-mode' | '/investigate'
+  id: '__root__' | '/' | '/cases' | '/detective-mode' | '/investigate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CasesRoute: typeof CasesRoute
+  DetectiveModeRoute: typeof DetectiveModeRoute
   InvestigateRoute: typeof InvestigateRoute
 }
 
@@ -56,6 +76,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cases': {
+      id: '/cases'
+      path: '/cases'
+      fullPath: '/cases'
+      preLoaderRoute: typeof CasesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/detective-mode': {
+      id: '/detective-mode'
+      path: '/detective-mode'
+      fullPath: '/detective-mode'
+      preLoaderRoute: typeof DetectiveModeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/investigate': {
@@ -70,6 +104,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CasesRoute: CasesRoute,
+  DetectiveModeRoute: DetectiveModeRoute,
   InvestigateRoute: InvestigateRoute,
 }
 export const routeTree = rootRouteImport
