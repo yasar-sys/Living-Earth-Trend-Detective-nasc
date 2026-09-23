@@ -6,6 +6,9 @@ export const PALETTE = {
   offWhite: "#E8E6E1",
   violet: "#7C6FF0",
   rust: "#C4544A",
+  temperature: "#ef9564",
+  seaice: "#8bd4ef",
+  co2: "#70d3a6",
 } as const;
 
 /**

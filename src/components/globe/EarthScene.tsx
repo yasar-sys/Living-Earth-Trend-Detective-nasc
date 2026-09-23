@@ -3,12 +3,39 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef, useState, type ComponentRef } from "react";
 import * as THREE from "three";
 
-import { REGIONS, type LayerId, type Region } from "@/data/nasa-datasets";
+import { REGIONS, ARCTIC_SEA_ICE, ANTARCTIC_SEA_ICE, START_YEAR, type LayerId, type Region } from "@/data/nasa-datasets";
 import { getTrend, getValueAt } from "@/data/trends";
 import { PALETTE, trendColor } from "@/lib/theme";
 import { latLonToVec3 } from "./geo";
 
 const EARTH_RADIUS = 1;
+
+/** Polar coverage follows the two September extent records, rather than a fixed halo. */
+function IceCoverage({ year }: { year: number }) {
+  const i = year - START_YEAR;
+  const north = Math.sqrt((ARCTIC_SEA_ICE[i] ?? 0) / Math.PI) / 111;
+  const south = Math.sqrt((ANTARCTIC_SEA_ICE[i] ?? 0) / Math.PI) / 111;
+  const northAngle = Math.min(0.6, north);
+  const southAngle = Math.min(0.8, south);
+  return <group>
+    <mesh key={`north-${year}`}>
+      <sphereGeometry args={[1.013, 64, 24, 0, Math.PI * 2, 0, northAngle]} />
+      <meshBasicMaterial color={PALETTE.seaice} transparent opacity={0.58} depthWrite={false} side={THREE.DoubleSide} />
+    </mesh>
+    <mesh key={`south-${year}`}>
+      <sphereGeometry args={[1.013, 64, 24, 0, Math.PI * 2, Math.PI - southAngle, southAngle]} />
+      <meshBasicMaterial color={PALETTE.seaice} transparent opacity={0.58} depthWrite={false} side={THREE.DoubleSide} />
+    </mesh>
+  </group>;
+}
+
+function Co2Atmosphere({ year }: { year: number }) {
+  const progress = (year - START_YEAR) / 46;
+  return <mesh scale={1.055}>
+    <sphereGeometry args={[1, 64, 32]} />
+    <meshBasicMaterial color={PALETTE.co2} transparent opacity={0.045 + progress * 0.17} depthWrite={false} side={THREE.FrontSide} />
+  </mesh>;
+}
 
 /**
  * Earth surface. Realism comes from the NASA Blue Marble-derived colour,
@@ -87,15 +114,16 @@ function RegionOverlay({
   const current = getValueAt(region.id, layer, year) ?? first;
   const span = Math.abs(trend.stats.slopePerDecade) * 4.5 || 1;
   const magnitude = Math.min(1, Math.abs((current - first) / span));
-  const color = trendColor(current - first, trend.stats.significant);
+  const color = layer === "temperature" ? PALETTE.temperature : layer === "seaice" ? PALETTE.seaice : PALETTE.co2;
+  const radius = layer === "temperature" ? 0.07 + magnitude * 0.14 : layer === "co2" ? 0.08 + magnitude * 0.11 : 0.075 + magnitude * 0.06;
 
   return (
     <mesh position={position} quaternion={quaternion} renderOrder={1}>
-      <circleGeometry args={[0.1, 32]} />
+       <circleGeometry args={[radius, 32]} />
       <meshBasicMaterial
         color={color}
         transparent
-        opacity={0.15 + magnitude * 0.5}
+         opacity={0.28 + magnitude * 0.42}
         depthWrite={false}
         side={THREE.DoubleSide}
       />
@@ -133,7 +161,7 @@ function RegionMarker({
   });
 
   if (!trend) return null;
-  const color = trendColor(trend.stats.slopePerDecade, trend.stats.significant);
+   const color = layer === "temperature" ? PALETTE.temperature : layer === "seaice" ? PALETTE.seaice : PALETTE.co2;
 
   return (
     <group position={position}>
@@ -243,6 +271,8 @@ export function EarthScene({
       <directionalLight position={[-4, -1, -3]} intensity={0.35} color={PALETTE.violet} />
 
       <Earth lowDetail={lowDetail} />
+      {layer === "seaice" && <IceCoverage year={year} />}
+      {layer === "co2" && <Co2Atmosphere year={year} />}
 
       {REGIONS.map((region) => (
         <RegionOverlay key={`o-${region.id}`} region={region} layer={layer} year={year} />

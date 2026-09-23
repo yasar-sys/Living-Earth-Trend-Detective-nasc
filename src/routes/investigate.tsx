@@ -6,11 +6,11 @@ import { LayerPanel } from "@/components/LayerPanel";
 import { RegionPanel } from "@/components/RegionPanel";
 import { SiteNav } from "@/components/SiteNav";
 import { TimeSlider } from "@/components/TimeSlider";
-import { END_YEAR, LAYERS, type LayerId } from "@/data/nasa-datasets";
+import { END_YEAR, LAST_OBSERVED_YEAR, LAYERS, getGlobalSeries, type LayerId } from "@/data/nasa-datasets";
 
 const TITLE = "Globe — Living Earth: Trend Detective";
 const DESCRIPTION =
-  "Toggle NASA temperature, sea ice and CO₂ layers on a realistic 3D Earth, scrub the 1980–2025 timeline, and click any region for its Mann-Kendall trend result.";
+  "Explore temperature, sea ice and CO₂ changes on a 3D Earth from 1980 to a clearly marked 2026 projection.";
 
 export const Route = createFileRoute("/investigate")({
   // The WebGL canvas is browser-only, so this route renders client-side.
@@ -33,6 +33,11 @@ function Investigate() {
   const [year, setYear] = useState(END_YEAR);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
+  const globalSeries = getGlobalSeries(layer);
+  const current = globalSeries.find((point) => point.year === year)?.value;
+  const baseline = globalSeries[0]?.value;
+  const change = current !== undefined && baseline !== undefined ? current - baseline : 0;
+  const readingLabel = layer === "seaice" ? "Arctic September extent" : layer === "co2" ? "Mauna Loa CO₂" : "Global temperature anomaly";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -58,16 +63,20 @@ function Investigate() {
               />
             </div>
             <div className="pointer-events-auto">
+              <div className="mb-3 flex w-fit max-w-full items-center gap-3 border-l-2 border-primary bg-card/90 px-3 py-2 backdrop-blur">
+                <span className={`size-2.5 shrink-0 rounded-full ${layer === "temperature" ? "bg-layer-temperature" : layer === "seaice" ? "bg-layer-seaice" : "bg-layer-co2"}`} />
+                <div className="min-w-0">
+                  <p className="text-[11px] text-muted-foreground">{readingLabel} · {year > LAST_OBSERVED_YEAR ? "2026 projection" : year}</p>
+                  <p className="text-sm font-medium tabular-nums">{current?.toFixed(LAYERS[layer].decimals)} {LAYERS[layer].unit} <span className="text-xs text-muted-foreground">({change >= 0 ? "+" : ""}{change.toFixed(LAYERS[layer].decimals)} since 1980)</span></p>
+                </div>
+              </div>
               <TimeSlider
                 year={year}
                 onChange={setYear}
                 playing={playing}
                 onTogglePlay={() => setPlaying((p) => !p)}
               />
-              <p className="mt-2 text-[11px] text-muted-foreground">
-                Showing {LAYERS[layer].shortLabel} in {year}. Drag to spin the Earth, tap a
-                marker to open its trend report.
-              </p>
+              <p className="mt-2 text-[11px] text-muted-foreground">{year === END_YEAR ? "2026 is projected from recent observations; no full-year measurement exists yet." : "Drag to spin the Earth; tap a marker for its trend report."}</p>
             </div>
           </div>
         </div>

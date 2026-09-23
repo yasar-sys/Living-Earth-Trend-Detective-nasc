@@ -2,7 +2,7 @@ import { X } from "lucide-react";
 
 import { SourceCredit } from "@/components/SourceCredit";
 import { TrendChart, trendLinePoints } from "@/components/TrendChart";
-import { LAYERS, REGION_BY_ID, type LayerId } from "@/data/nasa-datasets";
+import { LAYERS, REGION_BY_ID, LAST_OBSERVED_YEAR, type LayerId } from "@/data/nasa-datasets";
 import { formatRate, getTrend, getValueAt } from "@/data/trends";
 import { formatP } from "@/lib/mann-kendall";
 import { PALETTE, trendColor } from "@/lib/theme";
@@ -59,13 +59,13 @@ export function RegionPanel({
                 {value !== null ? value.toFixed(meta.decimals) : "—"}
                 <span className="ml-1 text-sm text-muted-foreground">{meta.unit}</span>
               </span>
-              <span className="pb-1 text-xs text-muted-foreground">in {year}</span>
+              <span className="pb-1 text-xs text-muted-foreground">{year > LAST_OBSERVED_YEAR ? `${year} projection` : `in ${year}`}</span>
             </div>
           </div>
 
           <div>
             <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
-              <span>Observed record, 1980–2025</span>
+              <span>Observed record, 1980–{LAST_OBSERVED_YEAR}</span>
               <span className="flex items-center gap-1.5">
                 <span className="h-px w-4 border-t border-dashed border-muted-foreground" />
                 Theil–Sen fit

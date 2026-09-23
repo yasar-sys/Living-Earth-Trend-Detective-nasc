@@ -298,7 +298,7 @@ function buildTemperature(region: Region): SeriesPoint[] {
     year,
     value:
       Math.round(
-        (GLOBAL_TEMP_ANOMALY[i]! * region.tempFactor + wiggle(seed, year) * noiseScale) *
+        (GLOBAL_TEMP_ANOMALY[i]! * region.tempFactor + (year > LAST_OBSERVED_YEAR ? 0 : wiggle(seed, year) * noiseScale)) *
           100,
       ) / 100,
   }));
@@ -309,7 +309,7 @@ function buildCo2(region: Region): SeriesPoint[] {
   return YEARS.map((year, i) => ({
     year,
     value:
-      Math.round((GLOBAL_CO2[i]! + region.co2Offset + wiggle(seed, year) * 0.35) * 10) /
+       Math.round((GLOBAL_CO2[i]! + region.co2Offset + (year > LAST_OBSERVED_YEAR ? 0 : wiggle(seed, year) * 0.35)) * 10) /
       10,
   }));
 }
@@ -331,7 +331,7 @@ function buildSeaIce(region: Region): SeriesPoint[] | null {
             : 0.4;
   return YEARS.map((year, i) => ({
     year,
-    value: Math.round((base[i]! * share + wiggle(seed, year) * 0.12) * 100) / 100,
+    value: Math.round((base[i]! * share + (year > LAST_OBSERVED_YEAR ? 0 : wiggle(seed, year) * 0.12)) * 100) / 100,
   }));
 }
 
