@@ -1,5 +1,6 @@
 /**
- * Pre-fetched, pre-cleaned NASA / NOAA time series (1980-2025).
+ * Pre-fetched, pre-cleaned NASA / NOAA time series (1980-2025), with a labelled
+ * illustrative projection for 2026. Do not use projected values for tests.
  *
  * Why the data is bundled instead of fetched live:
  *  - GISTEMP, NSIDC and the Global Monitoring Laboratory publish annual values

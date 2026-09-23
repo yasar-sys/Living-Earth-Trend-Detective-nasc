@@ -13,8 +13,8 @@ const EARTH_RADIUS = 1;
 /** Polar coverage follows the two September extent records, rather than a fixed halo. */
 function IceCoverage({ year }: { year: number }) {
   const i = year - START_YEAR;
-  const north = Math.sqrt((ARCTIC_SEA_ICE[i] ?? 0) / Math.PI) / 111;
-  const south = Math.sqrt((ANTARCTIC_SEA_ICE[i] ?? 0) / Math.PI) / 111;
+  const north = Math.sqrt(((ARCTIC_SEA_ICE[i] ?? 0) * 1_000_000) / Math.PI) / 6371;
+  const south = Math.sqrt(((ANTARCTIC_SEA_ICE[i] ?? 0) * 1_000_000) / Math.PI) / 6371;
   const northAngle = Math.min(0.6, north);
   const southAngle = Math.min(0.8, south);
   return <group>

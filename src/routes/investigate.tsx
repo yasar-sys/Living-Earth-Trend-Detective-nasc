@@ -45,7 +45,7 @@ function Investigate() {
 
       <div className="relative flex flex-1 flex-col sm:flex-row">
         {/* Globe stage */}
-        <div className="relative min-h-[60vh] flex-1 sm:min-h-0">
+         <div className="relative min-h-[680px] flex-1 sm:min-h-[calc(100vh-4rem)]">
           <GlobeCanvas
             layer={layer}
             year={year}
@@ -54,7 +54,7 @@ function Investigate() {
           />
 
           <div className="pointer-events-none absolute inset-0 flex flex-col justify-between p-3 sm:p-5">
-            <div className="pointer-events-auto max-w-xs">
+             <div className="pointer-events-auto max-w-full sm:max-w-xs">
               <LayerPanel
                 active={layer}
                 onChange={(next) => {
