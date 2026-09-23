@@ -6,7 +6,7 @@ import { LayerPanel } from "@/components/LayerPanel";
 import { RegionPanel } from "@/components/RegionPanel";
 import { SiteNav } from "@/components/SiteNav";
 import { TimeSlider } from "@/components/TimeSlider";
-import { END_YEAR, LAST_OBSERVED_YEAR, LAYERS, getGlobalSeries, type LayerId } from "@/data/nasa-datasets";
+import { END_YEAR, LAST_OBSERVED_YEAR, START_YEAR, LAYERS, getGlobalSeries, type LayerId } from "@/data/nasa-datasets";
 
 const TITLE = "Globe — Living Earth: Trend Detective";
 const DESCRIPTION =
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/investigate")({
 
 function Investigate() {
   const [layer, setLayer] = useState<LayerId>("temperature");
-  const [year, setYear] = useState(END_YEAR);
+  const [year, setYear] = useState(START_YEAR);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
   const globalSeries = getGlobalSeries(layer);
