@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/SiteNav";
 import { SourceCredit } from "@/components/SourceCredit";
 import { TrendChart } from "@/components/TrendChart";
-import { getSeries, type LayerId } from "@/data/nasa-datasets";
+import { getSeries, LAST_OBSERVED_YEAR, type LayerId } from "@/data/nasa-datasets";
 import { formatRate, getTrend } from "@/data/trends";
 import { formatP } from "@/lib/mann-kendall";
 import { PALETTE } from "@/lib/theme";
@@ -125,8 +125,8 @@ function Cases() {
 function CaseBlock({ spec }: { spec: CaseSpec }) {
   const leftTrend = getTrend(spec.left.regionId, spec.layer);
   const rightTrend = getTrend(spec.right.regionId, spec.layer);
-  const leftSeries = getSeries(spec.left.regionId, spec.layer);
-  const rightSeries = getSeries(spec.right.regionId, spec.layer);
+  const leftSeries = getSeries(spec.left.regionId, spec.layer)?.filter(p => p.year <= LAST_OBSERVED_YEAR);
+  const rightSeries = getSeries(spec.right.regionId, spec.layer)?.filter(p => p.year <= LAST_OBSERVED_YEAR);
 
   return (
     <article className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">

@@ -34,7 +34,7 @@ export function GlobeCanvas({
     <div className="absolute inset-0">
       <Canvas
         dpr={isMobile ? [1, 1.3] : [1, 2]}
-        camera={{ position: [0, 1.1, 2.8], fov: 45 }}
+        camera={{ position: [0, 0.7, isMobile ? 3.7 : 3.1], fov: 45 }}
         gl={{ antialias: !isMobile }}
         onPointerMissed={() => onSelect(null)}
       >

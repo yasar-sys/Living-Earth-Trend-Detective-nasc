@@ -1,5 +1,6 @@
 /**
- * Pre-fetched, pre-cleaned NASA / NOAA time series (1980-2025).
+ * Pre-fetched, pre-cleaned NASA / NOAA time series (1980-2025), with a labelled
+ * illustrative projection for 2026. Do not use projected values for tests.
  *
  * Why the data is bundled instead of fetched live:
  *  - GISTEMP, NSIDC and the Global Monitoring Laboratory publish annual values
@@ -28,7 +29,8 @@
  */
 
 export const START_YEAR = 1980;
-export const END_YEAR = 2025;
+export const LAST_OBSERVED_YEAR = 2025;
+export const END_YEAR = 2026;
 
 export const YEARS: number[] = Array.from(
   { length: END_YEAR - START_YEAR + 1 },
@@ -66,6 +68,20 @@ export const ANTARCTIC_SEA_ICE: number[] = [
   18.9, 19.2, 19.2, 19.1, 19.4, 19.6, 20.1, 18.8, 18.5, 18.0, 18.3, 18.6, 18.9, 18.9,
   18.2, 17.0, 17.2, 17.8,
 ];
+
+/** 2026 is not yet a complete annual record. Extend the latest decade's slope
+ * for an explicitly labelled projection; never treat it as an observation. */
+function projectNextYear(values: number[]): number {
+  const recent = values.slice(-10);
+  const first = recent.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
+  const last = recent.slice(5).reduce((a, b) => a + b, 0) / 5;
+  return (values.at(-1) ?? 0) + (last - first) / 5;
+}
+
+GLOBAL_TEMP_ANOMALY.push(Number(projectNextYear(GLOBAL_TEMP_ANOMALY).toFixed(2)));
+GLOBAL_CO2.push(Number(projectNextYear(GLOBAL_CO2).toFixed(1)));
+ARCTIC_SEA_ICE.push(Number(projectNextYear(ARCTIC_SEA_ICE).toFixed(2)));
+ANTARCTIC_SEA_ICE.push(Number(projectNextYear(ANTARCTIC_SEA_ICE).toFixed(2)));
 
 export type LayerId = "temperature" | "seaice" | "co2";
 
@@ -283,7 +299,7 @@ function buildTemperature(region: Region): SeriesPoint[] {
     year,
     value:
       Math.round(
-        (GLOBAL_TEMP_ANOMALY[i]! * region.tempFactor + wiggle(seed, year) * noiseScale) *
+        (GLOBAL_TEMP_ANOMALY[i]! * region.tempFactor + (year > LAST_OBSERVED_YEAR ? 0 : wiggle(seed, year) * noiseScale)) *
           100,
       ) / 100,
   }));
@@ -294,7 +310,7 @@ function buildCo2(region: Region): SeriesPoint[] {
   return YEARS.map((year, i) => ({
     year,
     value:
-      Math.round((GLOBAL_CO2[i]! + region.co2Offset + wiggle(seed, year) * 0.35) * 10) /
+       Math.round((GLOBAL_CO2[i]! + region.co2Offset + (year > LAST_OBSERVED_YEAR ? 0 : wiggle(seed, year) * 0.35)) * 10) /
       10,
   }));
 }
@@ -316,7 +332,7 @@ function buildSeaIce(region: Region): SeriesPoint[] | null {
             : 0.4;
   return YEARS.map((year, i) => ({
     year,
-    value: Math.round((base[i]! * share + wiggle(seed, year) * 0.12) * 100) / 100,
+    value: Math.round((base[i]! * share + (year > LAST_OBSERVED_YEAR ? 0 : wiggle(seed, year) * 0.12)) * 100) / 100,
   }));
 }
 

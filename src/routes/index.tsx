@@ -5,7 +5,7 @@ import { Starfield } from "@/components/Starfield";
 
 const TITLE = "Living Earth: Trend Detective";
 const DESCRIPTION =
-  "Investigate NASA Earth-observation records on an interactive 3D globe. Scrub through 1980–2025, test regional trends with the Mann-Kendall test, and uncover why one warming planet produces opposite regional trends.";
+  "Investigate Earth-observation records on an interactive 3D globe from 1980 to a projected 2026, test regional trends, and uncover contrasting changes.";
 
 export const Route = createFileRoute("/")({
   head: () => ({
