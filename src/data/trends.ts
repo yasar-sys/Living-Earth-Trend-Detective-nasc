@@ -33,6 +33,7 @@ const SCALE: Record<LayerId, number> = {
   temperature: 0.45,
   seaice: 0.4,
   co2: 25,
+  sealevel: 30,
 };
 
 export function getTrend(

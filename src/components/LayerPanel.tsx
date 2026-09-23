@@ -1,11 +1,17 @@
 import { LAYERS, type LayerId } from "@/data/nasa-datasets";
 import { SourceCredit } from "./SourceCredit";
 import { Button } from "@/components/ui/button";
-import { Cloud, Snowflake, Thermometer } from "lucide-react";
+import { Cloud, Snowflake, Thermometer, Waves } from "lucide-react";
 
-const ORDER: LayerId[] = ["temperature", "seaice", "co2"];
-const ICONS = { temperature: Thermometer, seaice: Snowflake, co2: Cloud };
-const SWATCHES = { temperature: "bg-layer-temperature", seaice: "bg-layer-seaice", co2: "bg-layer-co2" };
+const ORDER: LayerId[] = ["temperature", "seaice", "co2", "sealevel"];
+const ICONS = { temperature: Thermometer, seaice: Snowflake, co2: Cloud, sealevel: Waves };
+const SWATCHES = { temperature: "bg-layer-temperature", seaice: "bg-layer-seaice", co2: "bg-layer-co2", sealevel: "bg-[#3B9FE8]" };
+const HINTS: Record<LayerId, string> = {
+  temperature: "Heat-coloured markers",
+  seaice: "3D ice-cap domes at the poles",
+  co2: "Atmospheric particle cloud",
+  sealevel: "Expanding coastal rings",
+};
 
 export function LayerPanel({
   active,
@@ -21,7 +27,7 @@ export function LayerPanel({
       <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
         Data layer
       </p>
-       <div className="mt-2 grid grid-cols-3 gap-1 sm:block sm:space-y-1.5">
+       <div className="mt-2 grid grid-cols-2 gap-1 sm:block sm:space-y-1.5">
         {ORDER.map((id) => {
           const layer = LAYERS[id];
           const isActive = id === active;
@@ -40,7 +46,12 @@ export function LayerPanel({
             >
               {(() => { const Icon = ICONS[id]; return <Icon className="size-4 shrink-0" />; })()}
               <span className={`size-2 shrink-0 rounded-full ${SWATCHES[id]}`} />
-              <span className="block min-w-0 font-medium">{layer.shortLabel}</span>
+              <span className="block min-w-0">
+                <span className="block font-medium">{layer.shortLabel}</span>
+                <span className="hidden sm:block text-[10px] italic opacity-60 leading-tight mt-0.5">
+                  {HINTS[id]}
+                </span>
+              </span>
               <span className="sr-only">
                 {layer.label}
               </span>

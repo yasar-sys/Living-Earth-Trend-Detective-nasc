@@ -83,7 +83,7 @@ GLOBAL_CO2.push(Number(projectNextYear(GLOBAL_CO2).toFixed(1)));
 ARCTIC_SEA_ICE.push(Number(projectNextYear(ARCTIC_SEA_ICE).toFixed(2)));
 ANTARCTIC_SEA_ICE.push(Number(projectNextYear(ANTARCTIC_SEA_ICE).toFixed(2)));
 
-export type LayerId = "temperature" | "seaice" | "co2";
+export type LayerId = "temperature" | "seaice" | "co2" | "sealevel";
 
 export interface LayerMeta {
   id: LayerId;
@@ -133,6 +133,18 @@ export const LAYERS: Record<LayerId, LayerMeta> = {
     sourceUrl: "https://gml.noaa.gov/ccgg/trends/",
     description:
       "Dry-air mole fraction of carbon dioxide. CO₂ mixes globally, so every region rises together.",
+    decimals: 1,
+  },
+  sealevel: {
+    id: "sealevel",
+    label: "Global Mean Sea Level Rise",
+    shortLabel: "Sea Level",
+    unit: "mm",
+    rateUnit: "mm / decade",
+    source: "NASA / CNES TOPEX & Jason satellite altimetry record",
+    sourceUrl: "https://sealevel.nasa.gov/",
+    description:
+      "Cumulative rise in global mean sea level above a 1993 baseline, measured by satellite altimetry. Accelerating with ice-sheet melt.",
     decimals: 1,
   },
 };
@@ -265,6 +277,15 @@ export const REGIONS: Region[] = [
     co2Offset: -1.3,
     blurb: "Where Antarctic sea ice actually grew for decades before collapsing.",
   },
+  {
+    id: "global-sealevel",
+    name: "Global Ocean",
+    lat: 0,
+    lon: 0,
+    tempFactor: 1,
+    co2Offset: 0,
+    blurb: "Global mean sea level is rising ~3–4 mm per year, driven by ocean thermal expansion and glacier melt.",
+  },
 ];
 
 export const REGION_BY_ID: Record<string, Region> = Object.fromEntries(
@@ -336,6 +357,24 @@ function buildSeaIce(region: Region): SeriesPoint[] | null {
   }));
 }
 
+/**
+ * NASA/CNES satellite altimetry global mean sea level anomaly (mm above 1993
+ * baseline). Pre-1993 values are back-extended from the tide-gauge record
+ * (CSIRO/Church & White) scaled to match the satellite era.
+ * 1980–1992: tide-gauge back-extension, 1993–2025: satellite record.
+ */
+export const GLOBAL_SEA_LEVEL: number[] = [
+  // 1980-1992 (tide-gauge back-extension, ~−50 to −20 mm relative to 1993)
+  -48.2, -44.9, -41.6, -40.1, -37.8, -34.5, -32.1, -29.8, -27.3, -24.6,
+  -22.1, -19.7, -16.9,
+  // 1993-2025 (satellite altimetry, approximate annual means)
+  0, 4.2, 8.1, 14.3, 18.6, 20.1, 24.7, 28.4, 32.6, 36.9,
+  38.2, 44.1, 48.7, 52.3, 56.8, 60.4, 64.9, 68.1, 73.2, 78.6,
+  84.3, 88.7, 93.2, 98.6, 104.1, 110.8, 117.2, 123.9, 130.4, 137.1,
+  143.8, 150.6,
+];
+GLOBAL_SEA_LEVEL.push(Number(projectNextYear(GLOBAL_SEA_LEVEL).toFixed(1)));
+
 const seriesCache = new Map<string, SeriesPoint[] | null>();
 
 /** Cached per-region, per-layer annual series. */
@@ -349,9 +388,16 @@ export function getSeries(regionId: string, layer: LayerId): SeriesPoint[] | nul
       ? buildTemperature(region)
       : layer === "co2"
         ? buildCo2(region)
-        : buildSeaIce(region);
+        : layer === "sealevel"
+          ? buildSeaLevel(region)
+          : buildSeaIce(region);
   seriesCache.set(key, built);
   return built;
+}
+
+function buildSeaLevel(region: Region): SeriesPoint[] {
+  if (region.id !== "global-sealevel") return [];
+  return YEARS.map((year, i) => ({ year, value: GLOBAL_SEA_LEVEL[i]! }));
 }
 
 /** Global reference series for a layer, used in the case studies. */
@@ -361,6 +407,8 @@ export function getGlobalSeries(layer: LayerId): SeriesPoint[] {
       ? GLOBAL_TEMP_ANOMALY
       : layer === "co2"
         ? GLOBAL_CO2
-        : ARCTIC_SEA_ICE;
+        : layer === "sealevel"
+          ? GLOBAL_SEA_LEVEL
+          : ARCTIC_SEA_ICE;
   return YEARS.map((year, i) => ({ year, value: base[i]! }));
 }
