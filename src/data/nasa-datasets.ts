@@ -28,7 +28,8 @@
  */
 
 export const START_YEAR = 1980;
-export const END_YEAR = 2025;
+export const LAST_OBSERVED_YEAR = 2025;
+export const END_YEAR = 2026;
 
 export const YEARS: number[] = Array.from(
   { length: END_YEAR - START_YEAR + 1 },
@@ -66,6 +67,20 @@ export const ANTARCTIC_SEA_ICE: number[] = [
   18.9, 19.2, 19.2, 19.1, 19.4, 19.6, 20.1, 18.8, 18.5, 18.0, 18.3, 18.6, 18.9, 18.9,
   18.2, 17.0, 17.2, 17.8,
 ];
+
+/** 2026 is not yet a complete annual record. Extend the latest decade's slope
+ * for an explicitly labelled projection; never treat it as an observation. */
+function projectNextYear(values: number[]): number {
+  const recent = values.slice(-10);
+  const first = recent.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
+  const last = recent.slice(5).reduce((a, b) => a + b, 0) / 5;
+  return values[values.length - 1] + (last - first) / 5;
+}
+
+GLOBAL_TEMP_ANOMALY.push(Number(projectNextYear(GLOBAL_TEMP_ANOMALY).toFixed(2)));
+GLOBAL_CO2.push(Number(projectNextYear(GLOBAL_CO2).toFixed(1)));
+ARCTIC_SEA_ICE.push(Number(projectNextYear(ARCTIC_SEA_ICE).toFixed(2)));
+ANTARCTIC_SEA_ICE.push(Number(projectNextYear(ANTARCTIC_SEA_ICE).toFixed(2)));
 
 export type LayerId = "temperature" | "seaice" | "co2";
 

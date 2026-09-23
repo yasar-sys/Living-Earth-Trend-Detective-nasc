@@ -1,7 +1,11 @@
 import { LAYERS, type LayerId } from "@/data/nasa-datasets";
 import { SourceCredit } from "./SourceCredit";
+import { Button } from "@/components/ui/button";
+import { Cloud, Snowflake, Thermometer } from "lucide-react";
 
 const ORDER: LayerId[] = ["temperature", "seaice", "co2"];
+const ICONS = { temperature: Thermometer, seaice: Snowflake, co2: Cloud };
+const SWATCHES = { temperature: "bg-layer-temperature", seaice: "bg-layer-seaice", co2: "bg-layer-co2" };
 
 export function LayerPanel({
   active,
@@ -22,22 +26,25 @@ export function LayerPanel({
           const layer = LAYERS[id];
           const isActive = id === active;
           return (
-            <button
+            <Button
               key={id}
               type="button"
+              variant="outline"
               onClick={() => onChange(id)}
               aria-pressed={isActive}
-              className={`w-full rounded-md border px-3 py-2 text-left text-sm transition-colors ${
+              className={`h-auto w-full justify-start gap-2 rounded-md border px-3 py-2 text-left text-sm whitespace-normal transition-colors ${
                 isActive
                   ? "border-primary/70 bg-primary/15 text-foreground"
                   : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground"
               }`}
             >
-              <span className="block font-medium">{layer.shortLabel}</span>
-              <span className="block text-[11px] text-muted-foreground">
+              {(() => { const Icon = ICONS[id]; return <Icon className="size-4 shrink-0" />; })()}
+              <span className={`size-2 shrink-0 rounded-full ${SWATCHES[id]}`} />
+              <span className="block min-w-0 font-medium">{layer.shortLabel}</span>
+              <span className="sr-only">
                 {layer.label}
               </span>
-            </button>
+            </Button>
           );
         })}
       </div>

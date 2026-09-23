@@ -29,7 +29,7 @@ export function SourceCredit({
       </p>
       {withNote && (
         <p>
-          Published annual values are bundled with the app. Regional series are
+           Observed annual values run through 2025; 2026 is a projection, not a completed annual record. Regional series are
           reconstructions scaled from those records, so use them to explore trend
           statistics — not as the gridded source product.
         </p>

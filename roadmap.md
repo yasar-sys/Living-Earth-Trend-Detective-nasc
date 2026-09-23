@@ -1,0 +1,3 @@
+- [ ] Make temperature, sea ice, and CO₂ visually identifiable on the globe.
+- [ ] Extend the timeline to 2026 without presenting an incomplete year as a measured annual record.
+- [ ] Make playback visibly change the globe and live readings; verify desktop and mobile.

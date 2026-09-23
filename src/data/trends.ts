@@ -9,6 +9,7 @@ import { mannKendall, type MannKendallResult } from "@/lib/mann-kendall";
 import {
   END_YEAR,
   LAYERS,
+  LAST_OBSERVED_YEAR,
   REGIONS,
   START_YEAR,
   getSeries,
@@ -38,7 +39,7 @@ export function getTrend(
   regionId: string,
   layer: LayerId,
   fromYear = START_YEAR,
-  toYear = END_YEAR,
+  toYear = LAST_OBSERVED_YEAR,
 ): RegionTrend | null {
   const key = `${regionId}:${layer}:${fromYear}:${toYear}`;
   const cached = trendCache.get(key);
