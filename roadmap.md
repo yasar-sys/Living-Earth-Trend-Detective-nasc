@@ -1,3 +1,5 @@
 - [x] Make temperature, sea ice, and CO₂ visually identifiable on the globe.
 - [x] Extend the timeline to 2026 without presenting an incomplete year as a measured annual record.
 - [x] Make playback visibly change the globe and live readings; verify desktop and mobile.
+- [ ] Add an AI question form for region and layer, grounded in observed trend statistics and source data.
+- [ ] Verify AI response and error states in the live app.
