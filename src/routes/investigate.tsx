@@ -45,7 +45,7 @@ function Investigate() {
 
       <div className="relative flex flex-1 flex-col sm:flex-row">
         {/* Globe stage */}
-         <div className="relative min-h-[680px] flex-1 sm:min-h-[calc(100vh-4rem)]">
+         <div className="relative h-[680px] min-w-0 flex-1 sm:h-[calc(100vh-4rem)] sm:max-h-[900px]">
           <GlobeCanvas
             layer={layer}
             year={year}

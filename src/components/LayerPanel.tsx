@@ -54,6 +54,7 @@ export function LayerPanel({
       </p>
 
        <div className="mt-3 hidden space-y-1.5 border-t border-border/70 pt-3 text-[11px] sm:block">
+         <p className="mb-1 text-muted-foreground">Trend markers</p>
         <Legend color="bg-rising" label="Significant rise" />
         <Legend color="bg-declining" label="Significant decline" />
         <Legend color="bg-noise" label="Not distinguishable from noise" />

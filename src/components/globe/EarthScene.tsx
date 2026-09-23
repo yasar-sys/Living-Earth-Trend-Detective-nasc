@@ -33,7 +33,7 @@ function Co2Atmosphere({ year }: { year: number }) {
   const progress = (year - START_YEAR) / 46;
   return <mesh scale={1.055}>
     <sphereGeometry args={[1, 64, 32]} />
-    <meshBasicMaterial color={PALETTE.co2} transparent opacity={0.045 + progress * 0.17} depthWrite={false} side={THREE.FrontSide} />
+    <meshBasicMaterial color={PALETTE.co2} transparent opacity={0.02 + progress * 0.09} depthWrite={false} side={THREE.FrontSide} />
   </mesh>;
 }
 
@@ -115,7 +115,7 @@ function RegionOverlay({
   const span = Math.abs(trend.stats.slopePerDecade) * 4.5 || 1;
   const magnitude = Math.min(1, Math.abs((current - first) / span));
   const color = layer === "temperature" ? PALETTE.temperature : layer === "seaice" ? PALETTE.seaice : PALETTE.co2;
-  const radius = layer === "temperature" ? 0.07 + magnitude * 0.14 : layer === "co2" ? 0.08 + magnitude * 0.11 : 0.075 + magnitude * 0.06;
+  const radius = layer === "temperature" ? 0.045 + magnitude * 0.055 : layer === "co2" ? 0.04 + magnitude * 0.045 : 0.04 + magnitude * 0.035;
 
   return (
     <mesh position={position} quaternion={quaternion} renderOrder={1}>
@@ -123,7 +123,7 @@ function RegionOverlay({
       <meshBasicMaterial
         color={color}
         transparent
-         opacity={0.28 + magnitude * 0.42}
+         opacity={0.2 + magnitude * 0.2}
         depthWrite={false}
         side={THREE.DoubleSide}
       />
@@ -161,7 +161,7 @@ function RegionMarker({
   });
 
   if (!trend) return null;
-   const color = layer === "temperature" ? PALETTE.temperature : layer === "seaice" ? PALETTE.seaice : PALETTE.co2;
+   const color = trendColor(trend.stats.slopePerDecade, trend.stats.significant);
 
   return (
     <group position={position}>
