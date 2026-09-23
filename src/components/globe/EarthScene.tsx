@@ -294,7 +294,7 @@ export function EarthScene({
         enableDamping
         dampingFactor={0.08}
         rotateSpeed={0.5}
-        minDistance={1.55}
+        minDistance={lowDetail ? 2.3 : 1.75}
         maxDistance={4.5}
         autoRotate={!selectedId}
         autoRotateSpeed={0.3}

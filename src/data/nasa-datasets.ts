@@ -75,7 +75,7 @@ function projectNextYear(values: number[]): number {
   const recent = values.slice(-10);
   const first = recent.slice(0, 5).reduce((a, b) => a + b, 0) / 5;
   const last = recent.slice(5).reduce((a, b) => a + b, 0) / 5;
-  return values[values.length - 1] + (last - first) / 5;
+  return (values.at(-1) ?? 0) + (last - first) / 5;
 }
 
 GLOBAL_TEMP_ANOMALY.push(Number(projectNextYear(GLOBAL_TEMP_ANOMALY).toFixed(2)));
