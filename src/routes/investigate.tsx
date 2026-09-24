@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { GlobeCanvas } from "@/components/globe/GlobeCanvas";
 import { LayerPanel } from "@/components/LayerPanel";
 import { RegionPanel } from "@/components/RegionPanel";
 import { SiteNav } from "@/components/SiteNav";
-import { TimeSlider } from "@/components/TimeSlider";
+import { TimeSlider, type Speed } from "@/components/TimeSlider";
 import { END_YEAR, LAST_OBSERVED_YEAR, START_YEAR, LAYERS, getGlobalSeries, type LayerId } from "@/data/nasa-datasets";
 
 const TITLE = "Globe — Living Earth: Trend Detective";
@@ -33,6 +33,8 @@ function Investigate() {
   const [year, setYear] = useState(START_YEAR);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [playing, setPlaying] = useState(false);
+  const [speed, setSpeed] = useState<Speed>(1);
+  const pause = useCallback(() => setPlaying(false), []);
   const globalSeries = getGlobalSeries(layer);
   const current = globalSeries.find((point) => point.year === year)?.value;
   const baseline = globalSeries[0]?.value;
@@ -75,6 +77,9 @@ function Investigate() {
                 onChange={setYear}
                 playing={playing}
                 onTogglePlay={() => setPlaying((p) => !p)}
+                onPause={pause}
+                speed={speed}
+                onSpeedChange={setSpeed}
               />
               <p className="mt-2 text-[11px] text-muted-foreground">{year === END_YEAR ? "2026 is projected from recent observations; no full-year measurement exists yet." : "Drag to spin the Earth; tap a marker for its trend report."}</p>
             </div>
