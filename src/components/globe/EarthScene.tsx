@@ -495,7 +495,7 @@ function SeaLevelRings({ year }: { year: number }) {
   // Pre-create ring geometries + materials
   const { geos, mats } = useMemo(() => {
     const geos = Array.from({ length: NUM_RINGS }, () =>
-      new THREE.RingGeometry(maxRadius * 0.82, maxRadius, 64),
+      new THREE.RingGeometry(0.82, 1, 64),
     );
     const mats = Array.from({ length: NUM_RINGS }, () =>
       new THREE.MeshBasicMaterial({
@@ -508,8 +508,7 @@ function SeaLevelRings({ year }: { year: number }) {
     );
     ringMats.current = mats;
     return { geos, mats };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [maxRadius]);
+  }, []);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -524,15 +523,15 @@ function SeaLevelRings({ year }: { year: number }) {
   });
 
   return (
-    <group position={center} quaternion={quaternion}>
+    <group position={center} quaternion={quaternion} scale={maxRadius}>
       {Array.from({ length: NUM_RINGS }, (_, k) => (
         <mesh
           key={k}
           ref={(el) => {
             if (el) ringRefs.current[k] = el;
           }}
-          geometry={geos[k]}
-          material={mats[k]}
+          geometry={geos[k]!}
+          material={mats[k]!}
           renderOrder={2}
         />
       ))}
