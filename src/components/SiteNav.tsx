@@ -5,6 +5,7 @@ const links = [
   { to: "/investigate", label: "Globe" },
   { to: "/cases", label: "Detective Cases" },
   { to: "/detective-mode", label: "Detective Mode" },
+  { to: "/report", label: "Report" },
 ] as const;
 
 export function SiteNav() {
