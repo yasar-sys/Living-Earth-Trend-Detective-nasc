@@ -3,3 +3,6 @@
 - [x] Make playback visibly change the globe and live readings; verify desktop and mobile.
 - [ ] Add an AI question form for region and layer, grounded in observed trend statistics and source data.
 - [ ] Verify AI response and error states in the live app.
+- [x] Smooth year-by-year globe transitions, play speed 1x/2x/4x, stop at end, drag pauses.
+- [x] Research Report page with print/PDF.
+- [x] UI polish: page fades, slider fill, layer glow.

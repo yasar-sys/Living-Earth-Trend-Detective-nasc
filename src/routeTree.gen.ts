@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CasesRouteImport } from './routes/cases'
 import { Route as DetectiveModeRouteImport } from './routes/detective-mode'
 import { Route as InvestigateRouteImport } from './routes/investigate'
+import { Route as ReportRouteImport } from './routes/report'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,18 +35,25 @@ const InvestigateRoute = InvestigateRouteImport.update({
   path: '/investigate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cases': typeof CasesRoute
   '/detective-mode': typeof DetectiveModeRoute
   '/investigate': typeof InvestigateRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cases': typeof CasesRoute
   '/detective-mode': typeof DetectiveModeRoute
   '/investigate': typeof InvestigateRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,15 @@ export interface FileRoutesById {
   '/cases': typeof CasesRoute
   '/detective-mode': typeof DetectiveModeRoute
   '/investigate': typeof InvestigateRoute
+  '/report': typeof ReportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cases' | '/detective-mode' | '/investigate'
+  fullPaths: '/' | '/cases' | '/detective-mode' | '/investigate' | '/report'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cases' | '/detective-mode' | '/investigate'
-  id: '__root__' | '/' | '/cases' | '/detective-mode' | '/investigate'
+  to: '/' | '/cases' | '/detective-mode' | '/investigate' | '/report'
+  id:
+    '__root__' | '/' | '/cases' | '/detective-mode' | '/investigate' | '/report'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +77,7 @@ export interface RootRouteChildren {
   CasesRoute: typeof CasesRoute
   DetectiveModeRoute: typeof DetectiveModeRoute
   InvestigateRoute: typeof InvestigateRoute
+  ReportRoute: typeof ReportRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +110,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InvestigateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +125,7 @@ const rootRouteChildren: RootRouteChildren = {
   CasesRoute: CasesRoute,
   DetectiveModeRoute: DetectiveModeRoute,
   InvestigateRoute: InvestigateRoute,
+  ReportRoute: ReportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
