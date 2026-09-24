@@ -1,6 +1,6 @@
 import { Html, OrbitControls, useTexture } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useMemo, useRef, useState, type ComponentRef } from "react";
+import { useEffect, useMemo, useRef, useState, type ComponentRef } from "react";
 import * as THREE from "three";
 
 import {
@@ -16,6 +16,7 @@ import {
 import { getTrend, getValueAt } from "@/data/trends";
 import { PALETTE, trendColor } from "@/lib/theme";
 import { latLonToVec3 } from "./geo";
+import { useSmoothedValue } from "@/hooks/use-smoothed-value";
 
 const EARTH_RADIUS = 1;
 
@@ -103,12 +104,11 @@ function RegionOverlay({
   );
 
   const trend = getTrend(region.id, layer);
-  if (!trend) return null;
-
-  const first = trend.series[0]?.value ?? 0;
+  const first = trend?.series[0]?.value ?? 0;
   const current = getValueAt(region.id, layer, year) ?? first;
-  const span = Math.abs(trend.stats.slopePerDecade) * 4.5 || 1;
-  const magnitude = Math.min(1, Math.abs((current - first) / span));
+  const span = Math.abs(trend?.stats.slopePerDecade ?? 0) * 4.5 || 1;
+  const magnitude = useSmoothedValue(Math.min(1, Math.abs((current - first) / span)));
+  if (!trend) return null;
   const color = layer === "temperature" ? PALETTE.temperature : layer === "seaice" ? PALETTE.seaice : PALETTE.co2;
   const radius = layer === "temperature" ? 0.045 + magnitude * 0.055 : layer === "co2" ? 0.04 + magnitude * 0.045 : 0.04 + magnitude * 0.035;
 
@@ -285,6 +285,7 @@ function IceDomeMesh({
       new THREE.SphereGeometry(radius, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2.1),
     [radius],
   );
+  useEffect(() => () => geometry.dispose(), [geometry]);
 
   const material = useMemo(
     () =>
@@ -359,8 +360,8 @@ function IceDomes({
   const arcticVal = ARCTIC_SEA_ICE[i] ?? 0;
   const antarcticVal = ANTARCTIC_SEA_ICE[i] ?? 0;
 
-  const arcticRatio = Math.max(0.25, arcticVal / arcticMax);
-  const antarcticRatio = Math.max(0.25, antarcticVal / antarcticMax);
+  const arcticRatio = useSmoothedValue(Math.max(0.25, arcticVal / arcticMax));
+  const antarcticRatio = useSmoothedValue(Math.max(0.25, antarcticVal / antarcticMax));
 
   // Raw dome radius in km → scale to three.js globe units (globe radius = 1 = 6371 km)
   const arcticRadius = (4 + 22 * arcticRatio) / 6371;
@@ -407,7 +408,7 @@ function co2Color(ppm: number): THREE.Color {
 
 function Co2ParticleCloud({ year }: { year: number }) {
   const i = year - START_YEAR;
-  const ppm = GLOBAL_CO2[i] ?? GLOBAL_CO2[0]!;
+  const ppm = useSmoothedValue(GLOBAL_CO2[i] ?? GLOBAL_CO2[0]!);
 
   const particles = useMemo(() => {
     return Array.from({ length: NUM_PARTICLES }, (_, k) => {
@@ -478,7 +479,7 @@ function SeaLevelRings({ year }: { year: number }) {
   const i = year - START_YEAR;
   const rawVal = GLOBAL_SEA_LEVEL[i] ?? GLOBAL_SEA_LEVEL[0]!;
   const val = rawVal + 55; // shift so minimum is ~7
-  const maxRadius = (3 + Math.min(12, val / 8)) * 0.01;
+  const maxRadius = useSmoothedValue((3 + Math.min(12, val / 8)) * 0.01);
 
   const ringRefs = useRef<THREE.Mesh[]>([]);
   const ringMats = useRef<THREE.MeshBasicMaterial[]>([]);
@@ -494,7 +495,7 @@ function SeaLevelRings({ year }: { year: number }) {
   // Pre-create ring geometries + materials
   const { geos, mats } = useMemo(() => {
     const geos = Array.from({ length: NUM_RINGS }, () =>
-      new THREE.RingGeometry(maxRadius * 0.82, maxRadius, 64),
+      new THREE.RingGeometry(0.82, 1, 64),
     );
     const mats = Array.from({ length: NUM_RINGS }, () =>
       new THREE.MeshBasicMaterial({
@@ -507,8 +508,7 @@ function SeaLevelRings({ year }: { year: number }) {
     );
     ringMats.current = mats;
     return { geos, mats };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [maxRadius]);
+  }, []);
 
   useFrame(({ clock }) => {
     const t = clock.elapsedTime;
@@ -523,15 +523,15 @@ function SeaLevelRings({ year }: { year: number }) {
   });
 
   return (
-    <group position={center} quaternion={quaternion}>
+    <group position={center} quaternion={quaternion} scale={maxRadius}>
       {Array.from({ length: NUM_RINGS }, (_, k) => (
         <mesh
           key={k}
           ref={(el) => {
             if (el) ringRefs.current[k] = el;
           }}
-          geometry={geos[k]}
-          material={mats[k]}
+          geometry={geos[k]!}
+          material={mats[k]!}
           renderOrder={2}
         />
       ))}

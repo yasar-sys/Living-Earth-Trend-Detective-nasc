@@ -38,10 +38,10 @@ export function LayerPanel({
               variant="outline"
               onClick={() => onChange(id)}
               aria-pressed={isActive}
-              className={`h-auto w-full flex-col justify-center gap-1 rounded-md border px-1 py-2 text-center text-xs whitespace-normal transition-colors sm:flex-row sm:justify-start sm:gap-2 sm:px-3 sm:text-left sm:text-sm ${
+              className={`h-auto w-full flex-col justify-center gap-1 rounded-md border px-1 py-2 text-center text-xs whitespace-normal transition-[color,border-color,box-shadow] sm:flex-row sm:justify-start sm:gap-2 sm:px-3 sm:text-left sm:text-sm ${
                 isActive
-                  ? "border-primary/70 bg-primary/15 text-foreground"
-                  : "border-border bg-secondary/40 text-muted-foreground hover:text-foreground"
+                  ? "border-primary/70 bg-primary/15 text-foreground shadow-[0_0_14px_-2px_var(--primary)]"
+                  : "border-border bg-secondary/40 text-muted-foreground hover:border-primary/40 hover:text-foreground hover:shadow-[0_0_10px_-4px_var(--primary)] focus-visible:shadow-[0_0_10px_-4px_var(--primary)]"
               }`}
             >
               {(() => { const Icon = ICONS[id]; return <Icon className="size-4 shrink-0" />; })()}
