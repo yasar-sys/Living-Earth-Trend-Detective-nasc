@@ -1,10 +1,10 @@
 import { X } from "lucide-react";
 
 import { SourceCredit } from "@/components/SourceCredit";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { TrendChart, trendLinePoints } from "@/components/TrendChart";
 import { LAYERS, REGION_BY_ID, LAST_OBSERVED_YEAR, type LayerId } from "@/data/nasa-datasets";
-import { formatRate, getTrend, getValueAt } from "@/data/trends";
-import { formatP } from "@/lib/mann-kendall";
+import { getTrend, getValueAt } from "@/data/trends";
 import { PALETTE, trendColor } from "@/lib/theme";
 
 export function RegionPanel({
@@ -56,7 +56,7 @@ export function RegionPanel({
             </p>
             <div className="mt-1 flex items-end justify-between gap-3">
               <span className="text-display text-3xl leading-none">
-                {value !== null ? value.toFixed(meta.decimals) : "—"}
+                {value !== null ? <AnimatedNumber value={value} decimals={meta.decimals} /> : "—"}
                 <span className="ml-1 text-sm text-muted-foreground">{meta.unit}</span>
               </span>
               <span className="pb-1 text-xs text-muted-foreground">{year > LAST_OBSERVED_YEAR ? `${year} projection` : `in ${year}`}</span>
@@ -100,7 +100,7 @@ export function RegionPanel({
                 }}
                 className="text-display text-lg"
               >
-                {formatRate(layer, trend.stats.slopePerDecade)}
+                <AnimatedNumber value={trend.stats.slopePerDecade} decimals={meta.decimals} showPlus suffix={` ${meta.rateUnit}`} />
               </span>
             </Stat>
 
@@ -109,7 +109,7 @@ export function RegionPanel({
                 Statistical test
               </p>
               <p className="mt-1.5 text-sm">
-                Mann–Kendall test: {formatP(trend.stats.p)} —{" "}
+                Mann–Kendall test: {trend.stats.p < 0.001 ? <>p &lt; <AnimatedNumber value={0.001} decimals={3} /></> : <>p = <AnimatedNumber value={trend.stats.p} decimals={3} /></>} —{" "}
                 {trend.stats.significant ? (
                   <span className="inline-flex items-center gap-1.5 text-rising">
                     <span className="size-2 rounded-full bg-rising animate-signal" />
@@ -123,8 +123,8 @@ export function RegionPanel({
                 )}
               </p>
               <p className="mt-2 text-[11px] leading-relaxed text-muted-foreground">
-                Kendall&apos;s τ = {trend.stats.tau.toFixed(2)}, S = {trend.stats.s}, z ={" "}
-                {trend.stats.z.toFixed(2)}, n = {trend.stats.n} annual values, α = 0.05.
+                Kendall&apos;s τ = <AnimatedNumber value={trend.stats.tau} decimals={2} />, S = <AnimatedNumber value={trend.stats.s} />, z ={" "}
+                <AnimatedNumber value={trend.stats.z} decimals={2} />, n = <AnimatedNumber value={trend.stats.n} /> annual values, α = 0.05.
                 The slope is the Theil–Sen estimator, the median of all pairwise slopes.
               </p>
             </div>
