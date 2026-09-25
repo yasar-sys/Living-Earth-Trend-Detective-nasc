@@ -6,3 +6,6 @@
 - [x] Smooth year-by-year globe transitions, play speed 1x/2x/4x, stop at end, drag pauses.
 - [x] Research Report page with print/PDF.
 - [x] UI polish: page fades, slider fill, layer glow.
+- [ ] Add reusable reduced-motion-aware animated counters to live trend and quiz statistics.
+- [ ] Smooth and cross-fade all four existing globe layers, with selected-marker breathing and ambient CO₂/ring motion.
+- [ ] Add and verify the playback LIVE indicator across desktop and mobile.
