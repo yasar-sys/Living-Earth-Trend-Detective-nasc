@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { END_YEAR, LAST_OBSERVED_YEAR, START_YEAR } from "@/data/nasa-datasets";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 
 const SPEEDS = [1, 2, 4] as const;
 export type Speed = (typeof SPEEDS)[number];
@@ -67,9 +68,7 @@ export function TimeSlider({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-baseline justify-between">
-            <span className="text-display inline-block w-[4ch] text-2xl leading-none tabular-nums" aria-live="off">
-              {year}
-            </span>
+            <AnimatedNumber value={year} duration={620} className="text-display w-[4ch] text-2xl leading-none" />
             <span className="text-[11px] text-muted-foreground">
               {START_YEAR}–{END_YEAR}
             </span>

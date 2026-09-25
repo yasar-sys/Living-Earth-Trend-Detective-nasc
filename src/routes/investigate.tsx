@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useState } from "react";
 
 import { GlobeCanvas } from "@/components/globe/GlobeCanvas";
+import { AnimatedNumber } from "@/components/AnimatedNumber";
 import { LayerPanel } from "@/components/LayerPanel";
 import { RegionPanel } from "@/components/RegionPanel";
 import { SiteNav } from "@/components/SiteNav";
@@ -69,7 +70,7 @@ function Investigate() {
                 <span className={`size-2.5 shrink-0 rounded-full ${layer === "temperature" ? "bg-layer-temperature" : layer === "seaice" ? "bg-layer-seaice" : layer === "sealevel" ? "bg-[#3B9FE8]" : "bg-layer-co2"}`} />
                 <div className="min-w-0">
                   <p className="text-[11px] text-muted-foreground">{readingLabel} · {year > LAST_OBSERVED_YEAR ? "2026 projection" : year}</p>
-                  <p className="text-sm font-medium tabular-nums">{current?.toFixed(LAYERS[layer].decimals)} {LAYERS[layer].unit} <span className="text-xs text-muted-foreground">({change >= 0 ? "+" : ""}{change.toFixed(LAYERS[layer].decimals)} since 1980)</span></p>
+                  <p className="text-sm font-medium tabular-nums"><AnimatedNumber value={current ?? 0} decimals={LAYERS[layer].decimals} /> {LAYERS[layer].unit} <span className="text-xs text-muted-foreground">(<AnimatedNumber value={change} decimals={LAYERS[layer].decimals} showPlus /> since 1980)</span></p>
                 </div>
               </div>
               <TimeSlider
@@ -81,6 +82,12 @@ function Investigate() {
                 speed={speed}
                 onSpeedChange={setSpeed}
               />
+              {playing && (
+                <div className="absolute right-3 top-3 flex items-center gap-2 rounded-md border border-declining/50 bg-background/80 px-2.5 py-1.5 text-[10px] font-semibold uppercase text-foreground backdrop-blur sm:right-5 sm:top-5" role="status">
+                  <span className="size-2 rounded-full bg-declining animate-live-pulse" />
+                  Live · Playing 1980 → <AnimatedNumber value={year} />
+                </div>
+              )}
               <p className="mt-2 text-[11px] text-muted-foreground">{year === END_YEAR ? "2026 is projected from recent observations; no full-year measurement exists yet." : "Drag to spin the Earth; tap a marker for its trend report."}</p>
             </div>
           </div>

@@ -1,11 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+
 /** Eases a displayed number toward `target` over `durationMs` (ease-out cubic). */
 export function useSmoothedValue(target: number, durationMs = 700): number {
+  const reducedMotion = usePrefersReducedMotion();
   const [value, setValue] = useState(target);
   const current = useRef(target);
 
   useEffect(() => {
+    if (reducedMotion) {
+      current.current = target;
+      setValue(target);
+      return;
+    }
     const from = current.current;
     if (from === target) return;
     const start = performance.now();
@@ -20,7 +28,7 @@ export function useSmoothedValue(target: number, durationMs = 700): number {
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [target, durationMs]);
+  }, [target, durationMs, reducedMotion]);
 
   return value;
 }
